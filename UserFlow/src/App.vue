@@ -6,8 +6,8 @@ import { RouterLink, RouterView } from 'vue-router'
   <header>
     <div class="wrapper">
       <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
+        <RouterLink to="/">main</RouterLink>
+        <RouterLink to="/profile">profile</RouterLink>
       </nav>
     </div>
   </header>
@@ -33,5 +33,4 @@ nav a {
 nav a:first-of-type {
   border: 0;
 }
-
 </style>
