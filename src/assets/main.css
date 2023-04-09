@@ -22,7 +22,8 @@ a {
 
 @media (min-width: 1024px) {
   body {
-    display: flex;
+    max-width: 1024px ;
     justify-content: center;
+    margin: auto;
   }
 }
