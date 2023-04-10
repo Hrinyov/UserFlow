@@ -1,54 +1,114 @@
 <template>
-  <div class="profile">
-  <div class="user-info">
-    <h2>User name and info</h2>
-  </div>
-  <div>
-    <button >Create Event</button>
-  </div>
-  <div class="events-wrapper">
-    <h2>Tasks tabel</h2>
-    <Tasks :tasks="tasks"/>
-
-  </div>
+  <div class="profile-wrapper">
+    <div class="profile">
+      <div class="user-info">
+        <h2>User info</h2>
+        <h3>Username: {{ user.username }}</h3>
+        <h3>Email: {{ user.email  }} </h3>
+      </div>
+      <div>
+        <button class="add-event" @click="VeiwForm()">{{ text }}</button>
+        <CreateEvent v-show="formOpen" :userID="userId" />
+      </div>
+      <div class="events-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Description</th>
+              <th>Start Date</th>
+              <th>End Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="event in events" :key="event.id">
+              <td>{{ event.title }}</td>
+              <td>{{ event.description }}</td>
+              <td>{{ formatDate(event.startDate) }}</td>
+              <td>{{ formatDate(event.endDate) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </template>
-<script lang="ts">
-import Tasks from '../components/Tasks.vue';
+<script>
+import CreateEvent from '../components/CreateEvent.vue'
+import axios from 'axios'
+import moment from 'moment'
+
 export default {
   name: 'Profile',
   components: {
-  Tasks
+    CreateEvent
   },
-  data(){
+  data() {
     return {
-      tasks: []
+      formOpen: false,
+      events: [],
+      userId: 1,
+        user: {
+          username: '',
+          email: ''
+      },
+      text: 'Create event'
     }
   },
-  created(){
-    this.tasks = [
-      {
-        id: 1,
-        title:"Visit doctor",
-        description: "Visit doctor",
-        startDate: "Jun 5st at 3:00pm",
-        endDate: "Jun 5st at 4:00pm",
-      },
-      {
-        id: 2,
-        title:"Go to gym",
-        description: "I need go to gym",
-        startDate: "Jun 5st at 6:00pm",
-        endDate: "Jun 5st at 7:00pm",
-      },
-      {
-        id: 3,
-        title:"Learn play guitar",
-        description: "I go in the music scool",
-        startDate: "Jun 8st at 10:00am",
-        endDate: "Jun 8st at 11:00am",
-      },
-    ]
+  mounted() {
+    axios
+      .get('http://localhost:8080/events')
+      .then((response) => {
+        this.events = response.data
+      })
+      .catch((error) => {
+        console.log(error)
+      }),
+      axios
+      .get(`http://localhost:8080/users/${this.userId}`)
+      .then((response) => {
+        this.user = response.data[0];
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  },
+  methods: {
+    VeiwForm() {
+      this.formOpen = !this.formOpen
+      this.formOpen ? this.text = 'Close form' : this.text = 'Create event'
+    },
+    formatDate(date) {
+      return moment(date).format('YYYY.MM.DD HH:mm')
+    }
   }
 }
 </script>
+<style>
+.user-info {
+  display: block;
+  height: 100px;
+  width: 300px;
+  border-bottom: 1px solid grey;
+  margin: auto;
+}
+.add-event {
+  margin: 20px;
+  font-size: 20px;
+}
+.profile-wrapper {
+  text-align: center;
+}
+.events-wrapper table {
+  border: 2px solid black;
+}
+.events-wrapper td {
+  border: 1px solid black;
+}
+.events-wrapper {
+  display: flex;
+  justify-content: center;
+  font-size: 20px;
+  margin-top: 20px;
+}
+</style>

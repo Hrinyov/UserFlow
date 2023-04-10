@@ -35,8 +35,7 @@ export default {
   methods: {
     handleSubmit() {
       const userData = {
-        firstName: this.firstName,
-        lastName: this.lastName,
+        username: this.firstName +" "+ this.lastName,
         email: this.email,
         phoneNumber: this.phoneNumber,
       };

@@ -1,7 +1,7 @@
 <template>
   <div class="main-wrapper">
   <div class="main">
-    <button class="add-user" @click="VeiwForm()">Create user</button>
+    <button class="add-user" @click="VeiwForm()">{{ text }}</button>
     <CreateUser v-show="formOpen"/>
   </div>
   <div class="users-table">
@@ -33,7 +33,8 @@ export default {
   data() {
     return {
       formOpen: false,
-      users: []
+      users: [],
+      text: 'Create user'
     }
   },
   components: {
@@ -51,6 +52,7 @@ export default {
   methods: {
     VeiwForm() {
     this.formOpen = !this.formOpen;
+    this.formOpen ? this.text = 'Close form' : this.text = 'Create user'
     }
   }
 }
