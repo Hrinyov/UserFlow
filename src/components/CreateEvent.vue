@@ -19,6 +19,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
   data() {
     return {
@@ -26,22 +27,39 @@ export default {
       description: '',
       startDate: '',
       endDate: '',
+      userId: 1
     }
   },
-  props: ["userID"],
   methods: {
     createEvent() {
+       axios
+      .get('http://localhost:8080/userId')
+      .then((response) => {
+        this.userId = response.data[0].userId
+        console.log(response.data)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+
       const newEvent = {
         title: this.title,
         description: this.description,
         startDate: this.startDate,
         endDate: this.endDate,
-        userId: this.userID
+        userId: this.userId
       };
-      console.log(newEvent);
-      this.clearForm();
 
-      // Add code here to send the new event to your back-end API
+      axios.post('http://localhost:8080/events', {
+      ...newEvent
+      })
+      .then(response => {
+      console.log(response.data);
+      })
+      .catch(error => {
+      console.log(error);
+      });
+      this.clearForm();  
     },
     clearForm(){
       this.title = '';

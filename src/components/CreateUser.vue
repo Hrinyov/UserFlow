@@ -23,6 +23,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
   data() {
     return {
@@ -34,12 +35,28 @@ export default {
   },
   methods: {
     handleSubmit() {
+
       const userData = {
         username: this.firstName +" "+ this.lastName,
         email: this.email,
-        phoneNumber: this.phoneNumber,
+        phonenumber: this.phoneNumber,
       };
-      console.log(userData); 
+       axios.post('http://localhost:8080/users', {
+      ...userData
+      })
+      .then(response => {
+      response.data
+      })
+      .catch(error => {
+      console.log(error);
+      });
+      this.clearForm();  
+    },
+    clearForm(){
+      this.firstName = '';
+      this.lastName = '';
+      this.email = '';
+      this.phoneNumber = '';
     },
   },
 };

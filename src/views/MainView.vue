@@ -14,7 +14,7 @@
     </tr>
   </thead>
   <tbody>
-    <tr v-for="user in users" :key="user.id">
+    <tr class="user-tr" v-for="user in users" :key="user.id"  @click="selectUser(user)">
       <td>{{ user.username }}</td>
       <td>{{ user.email }}</td>
       <td>{{ user.phonenumber }}</td>
@@ -23,18 +23,18 @@
 </table>
   </div>
   </div>
-
 </template>
 <script >
 
 import axios from 'axios';
 import CreateUser from '../components/CreateUser.vue';
+
 export default {
   data() {
     return {
       formOpen: false,
       users: [],
-      text: 'Create user'
+      text: 'Create user',
     }
   },
   components: {
@@ -53,11 +53,21 @@ export default {
     VeiwForm() {
     this.formOpen = !this.formOpen;
     this.formOpen ? this.text = 'Close form' : this.text = 'Create user'
+    },
+    selectUser(user) {
+      this.user = user.id;
+      axios.post('http://localhost:8080/userid', {
+      userId : user.id
+      })
+      .then(response => {
+      response.data
+      })
+      .catch(error => {
+      console.log(error);
+      });
     }
-  }
-}
-{
-
+  },
+  
 }
 </script>
 <style>
@@ -77,6 +87,12 @@ export default {
 }
 .users-table td {
   border: 1px solid black;
+}
+.user-tr:hover {
+background-color: hsla(198, 71%, 55%, 0.2);
+}
+.user-tr {
+  cursor: pointer;
 }
 .users-table {
   display: flex;

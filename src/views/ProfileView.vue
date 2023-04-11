@@ -4,12 +4,13 @@
       <div class="user-info">
         <h2>User info</h2>
         <h3>Username: {{ user.username }}</h3>
-        <h3>Email: {{ user.email  }} </h3>
+        <h3>Email: {{ user.email }}</h3>
       </div>
       <div>
         <button class="add-event" @click="VeiwForm()">{{ text }}</button>
-        <CreateEvent v-show="formOpen" :userID="userId" />
+        <CreateEvent v-show="formOpen" />
       </div>
+       <button class="add-event" @click="Refresh">Refresh</button>
       <div class="events-wrapper">
         <table>
           <thead>
@@ -37,7 +38,6 @@
 import CreateEvent from '../components/CreateEvent.vue'
 import axios from 'axios'
 import moment from 'moment'
-
 export default {
   name: 'Profile',
   components: {
@@ -47,15 +47,24 @@ export default {
     return {
       formOpen: false,
       events: [],
-      userId: 1,
-        user: {
-          username: '',
-          email: ''
+      userId: '',
+      user: {
+        username: '',
+        email: ''
       },
       text: 'Create event'
     }
   },
   mounted() {
+    axios
+      .get('http://localhost:8080/userid')
+      .then((response) => {
+        this.userId = response.data[0].userId
+        console.log(response.data[0].userId)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
     axios
       .get('http://localhost:8080/events')
       .then((response) => {
@@ -64,10 +73,11 @@ export default {
       .catch((error) => {
         console.log(error)
       }),
-      axios
+    axios
       .get(`http://localhost:8080/users/${this.userId}`)
       .then((response) => {
-        this.user = response.data[0];
+        this.user = response.data[0]
+        console.log(response.data)
       })
       .catch((error) => {
         console.log(error)
@@ -76,10 +86,39 @@ export default {
   methods: {
     VeiwForm() {
       this.formOpen = !this.formOpen
-      this.formOpen ? this.text = 'Close form' : this.text = 'Create event'
+      this.formOpen ? (this.text = 'Close form') : (this.text = 'Create event')
     },
     formatDate(date) {
       return moment(date).format('YYYY.MM.DD HH:mm')
+    },
+    Refresh(){
+      axios
+      .get('http://localhost:8080/userid')
+      .then((response) => {
+        this.userId = response.data[0].userId
+        console.log(response.data[0].userId)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+      axios
+      .get('http://localhost:8080/events')
+      .then((response) => {
+        this.events = response.data
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+      axios
+        .get(`http://localhost:8080/users/${this.userId}`)
+        .then((response) => {
+          this.user = response.data[0]
+          console.log(response.data)
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+      
     }
   }
 }
