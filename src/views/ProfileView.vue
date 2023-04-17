@@ -8,9 +8,8 @@
       </div>
       <div>
         <button class="add-event" @click="VeiwForm()">{{ text }}</button>
-        <CreateEvent v-show="formOpen" />
+        <CreateEvent v-show="formOpen" @event-created="refresh" />
       </div>
-       <button class="add-event" @click="getUserInfoAndEvents">Refresh</button>
       <div class="events-wrapper">
         <table>
           <thead>
@@ -86,6 +85,10 @@ export default {
       .catch((error) => {
         console.log(error)
       })
+    },
+    refresh(){
+      this.getUserInfoAndEvents();
+      this.VeiwForm();
     }
   }
 }
