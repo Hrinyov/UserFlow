@@ -35,12 +35,14 @@ export default {
       formOpen: false,
       users: [],
       text: 'Create user',
+      defaultUserId: 1,
     }
   },
   components: {
   CreateUser
   },
   mounted() {
+  this.checkUserId();
   axios.get('http://localhost:8080/users')
   .then(response => {
     this.users = response.data;
@@ -56,15 +58,13 @@ export default {
     },
     selectUser(user) {
       this.user = user.id;
-      axios.post('http://localhost:8080/userid', {
-      userId : user.id
-      })
-      .then(response => {
-      response.data
-      })
-      .catch(error => {
-      console.log(error);
-      });
+      localStorage.setItem('userId', user.id);
+    },
+    checkUserId(){
+      const userId = localStorage.getItem('userId');
+      if(userId === null){
+      localStorage.setItem('userId', 1);
+      }
     }
   },
   

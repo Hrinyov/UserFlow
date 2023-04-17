@@ -10,7 +10,7 @@
         <button class="add-event" @click="VeiwForm()">{{ text }}</button>
         <CreateEvent v-show="formOpen" />
       </div>
-       <button class="add-event" @click="Refresh">Refresh</button>
+       <button class="add-event" @click="getUserInfoAndEvents">Refresh</button>
       <div class="events-wrapper">
         <table>
           <thead>
@@ -34,7 +34,7 @@
     </div>
   </div>
 </template>
-<script>
+<script >
 import CreateEvent from '../components/CreateEvent.vue'
 import axios from 'axios'
 import moment from 'moment'
@@ -47,7 +47,7 @@ export default {
     return {
       formOpen: false,
       events: [],
-      userId: '',
+      userId: 1,
       user: {
         username: '',
         email: ''
@@ -55,33 +55,8 @@ export default {
       text: 'Create event'
     }
   },
-  mounted() {
-    axios
-      .get('http://localhost:8080/userid')
-      .then((response) => {
-        this.userId = response.data[0].userId
-        console.log(response.data[0].userId)
-      })
-      .catch((error) => {
-        console.log(error)
-      })
-    axios
-      .get('http://localhost:8080/events')
-      .then((response) => {
-        this.events = response.data
-      })
-      .catch((error) => {
-        console.log(error)
-      }),
-    axios
-      .get(`http://localhost:8080/users/${this.userId}`)
-      .then((response) => {
-        this.user = response.data[0]
-        console.log(response.data)
-      })
-      .catch((error) => {
-        console.log(error)
-      })
+  mounted() { 
+    this.getUserInfoAndEvents();
   },
   methods: {
     VeiwForm() {
@@ -91,34 +66,26 @@ export default {
     formatDate(date) {
       return moment(date).format('YYYY.MM.DD HH:mm')
     },
-    Refresh(){
-      axios
-      .get('http://localhost:8080/userid')
+    getUserInfoAndEvents(){
+      this.userId = localStorage.getItem('userId');
+    
+    axios
+      .get(`http://localhost:8080/users/${this.userId}`)
       .then((response) => {
-        this.userId = response.data[0].userId
-        console.log(response.data[0].userId)
+        this.user = response.data[0]
       })
       .catch((error) => {
         console.log(error)
-      })
+      }),
+
       axios
-      .get('http://localhost:8080/events')
+      .get(`http://localhost:8080/events/${this.userId}`)
       .then((response) => {
         this.events = response.data
       })
       .catch((error) => {
         console.log(error)
       })
-      axios
-        .get(`http://localhost:8080/users/${this.userId}`)
-        .then((response) => {
-          this.user = response.data[0]
-          console.log(response.data)
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-      
     }
   }
 }
