@@ -14,15 +14,19 @@
     </tr>
   </thead>
   <tbody>
-    <tr class="user-tr" v-for="user in users" :key="user.id"  @click="selectUser(user)">
+    <tr class="user-tr" v-for="user in users" :key="user.id" 
+    :class="{ 'selected': selectedIndex == user.id }" @click="selectUser(user)">
       <td>{{ user.username }}</td>
       <td>{{ user.email }}</td>
       <td>{{ user.phonenumber }}</td>
     </tr>
   </tbody>
+  
 </table>
   </div>
+  <h4 class="info">***marked in GREEN user is displayed in the profile***</h4>
   </div>
+  
 </template>
 <script >
 
@@ -36,6 +40,7 @@ export default {
       users: [],
       text: 'Create user',
       defaultUserId: 1,
+      selectedIndex: localStorage.getItem('userId'),
     }
   },
   components: {
@@ -47,12 +52,13 @@ export default {
   },
   methods: {
     VeiwForm() {
-    this.formOpen = !this.formOpen;
-    this.formOpen ? this.text = 'Close form' : this.text = 'Create user'
+      this.formOpen = !this.formOpen;
+      this.formOpen ? this.text = 'Close form' : this.text = 'Create user'
     },
     selectUser(user) {
       this.user = user.id;
       localStorage.setItem('userId', user.id);
+      this.selectRow(user.id)
     },
     checkUserId(){
       const userId = localStorage.getItem('userId');
@@ -61,7 +67,7 @@ export default {
       }
     },
     getUsers(){
-    axios.get('http://localhost:8080/users')
+      axios.get('http://localhost:8080/users')
       .then(response => {
       this.users = response.data;
       })
@@ -69,10 +75,15 @@ export default {
      console.log(error);
       });
       },
-      refresh(){
-        this.getUsers();
-        this.VeiwForm();
+    refresh(){
+      this.getUsers();
+      this.VeiwForm();
+      },
+    selectRow(index) {
+      if (this.selectedIndex !== index) {
+        this.selectedIndex = index;
       }
+    }
     },
   
 }
@@ -106,5 +117,12 @@ background-color: hsla(198, 71%, 55%, 0.2);
   justify-content: center;
   font-size: 20px;
   margin-top: 20px;
+}
+.user-tr.selected {
+  background-color: #21b77b57;
+}
+.info {
+margin-top: 5px;
+color: #21b77b;;
 }
 </style>
