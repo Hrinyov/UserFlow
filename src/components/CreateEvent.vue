@@ -27,21 +27,13 @@ export default {
       description: '',
       startDate: '',
       endDate: '',
-      userId: 1
+      userId: ''
     }
   },
   methods: {
     createEvent() {
-       axios
-      .get('http://localhost:8080/userId')
-      .then((response) => {
-        this.userId = response.data[0].userId
-        console.log(response.data)
-      })
-      .catch((error) => {
-        console.log(error)
-      })
-
+      this.userId = localStorage.getItem('userId');
+      
       const newEvent = {
         title: this.title,
         description: this.description,
