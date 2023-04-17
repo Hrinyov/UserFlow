@@ -35,8 +35,8 @@ export default {
   },
   methods: {
     handleSubmit() {
-
-      const userData = {
+      if(this.validateForm()){
+       const userData = {
         username: this.firstName +" "+ this.lastName,
         email: this.email,
         phonenumber: this.phoneNumber,
@@ -45,12 +45,14 @@ export default {
       ...userData
       })
       .then(response => {
-      response.data
+      this.$emit('form-submitted');
+
       })
       .catch(error => {
       console.log(error);
       });
-      this.clearForm();  
+      this.clearForm();   
+      }
     },
     clearForm(){
       this.firstName = '';
@@ -58,6 +60,26 @@ export default {
       this.email = '';
       this.phoneNumber = '';
     },
+    validateForm(){
+      const nameRegex = /^[a-zA-Z]+$/;
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const phoneNumberRegex = /^\d{10}$/;
+      if (
+      !this.firstName ||
+      !nameRegex.test(this.firstName) ||
+      !this.lastName ||
+      !nameRegex.test(this.lastName) ||
+      !this.email ||
+      !emailRegex.test(this.email) ||
+      !this.phoneNumber || 
+      !phoneNumberRegex.test(this.phoneNumber)
+        ){
+          alert('Please fill out all the form fields with valid data');
+          return false;
+        } else {
+      return true;
+        }
+    }
   },
 };
 </script>
