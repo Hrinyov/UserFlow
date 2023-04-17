@@ -33,7 +33,7 @@ export default {
   methods: {
     createEvent() {
       this.userId = localStorage.getItem('userId');
-      
+
       const newEvent = {
         title: this.title,
         description: this.description,
@@ -46,12 +46,13 @@ export default {
       ...newEvent
       })
       .then(response => {
-      console.log(response.data);
+      this.$emit('event-created');
       })
       .catch(error => {
       console.log(error);
       });
-      this.clearForm();  
+      this.clearForm();
+
     },
     clearForm(){
       this.title = '';
