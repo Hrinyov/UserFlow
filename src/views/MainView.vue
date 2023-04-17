@@ -2,7 +2,7 @@
   <div class="main-wrapper">
   <div class="main">
     <button class="add-user" @click="VeiwForm()">{{ text }}</button>
-    <CreateUser v-show="formOpen"/>
+    <CreateUser v-show="formOpen" @form-submitted="refresh"/>
   </div>
   <div class="users-table">
 <table>
@@ -43,13 +43,7 @@ export default {
   },
   mounted() {
   this.checkUserId();
-  axios.get('http://localhost:8080/users')
-  .then(response => {
-    this.users = response.data;
-  })
-  .catch(error => {
-    console.log(error);
-  });
+  this.getUsers();
   },
   methods: {
     VeiwForm() {
@@ -65,8 +59,21 @@ export default {
       if(userId === null){
       localStorage.setItem('userId', 1);
       }
-    }
-  },
+    },
+    getUsers(){
+    axios.get('http://localhost:8080/users')
+      .then(response => {
+      this.users = response.data;
+      })
+      .catch(error => {
+     console.log(error);
+      });
+      },
+      refresh(){
+        this.getUsers();
+        this.VeiwForm();
+      }
+    },
   
 }
 </script>
