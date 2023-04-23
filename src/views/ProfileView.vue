@@ -7,7 +7,7 @@
         <h3>Email: {{ user.email }}</h3>
       </div>
       <div>
-        <button class="add-event" @click="VeiwForm()">{{ text }}</button>
+        <button class="add-event" @click="viewForm()">{{ text }}</button>
         <CreateEvent v-show="formOpen" @event-created="refresh" />
       </div>
       <div class="events-wrapper">
@@ -58,7 +58,7 @@ export default {
     this.getUserInfoAndEvents();
   },
   methods: {
-    VeiwForm() {
+    viewForm() {
       this.formOpen = !this.formOpen
       this.formOpen ? (this.text = 'Close form') : (this.text = 'Create event')
     },
