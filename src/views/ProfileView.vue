@@ -21,6 +21,9 @@
             </tr>
           </thead>
           <tbody>
+            <tr v-if="events.length === 0">
+              <td colspan="4">The event list is empty.</td>
+            </tr>
             <tr v-for="event in events" :key="event.id">
               <td>{{ event.title }}</td>
               <td>{{ event.description }}</td>
@@ -88,7 +91,7 @@ export default {
     },
     refresh(){
       this.getUserInfoAndEvents();
-      this.VeiwForm();
+      this.viewForm();
     }
   }
 }
