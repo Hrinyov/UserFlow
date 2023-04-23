@@ -11,6 +11,8 @@
       <th>Username</th>
       <th>Email</th>
       <th>Phone Number</th>
+      <th>Events Count</th>
+      <th>Next Event Date</th>
     </tr>
   </thead>
   <tbody>
@@ -19,6 +21,8 @@
       <td>{{ user.username }}</td>
       <td>{{ user.email }}</td>
       <td>{{ user.phonenumber }}</td>
+      <td>{{ user.eventsCount }}</td>
+      <td>{{ formatDate(user.nextEventDate) }}</td>
     </tr>
   </tbody>
   
@@ -32,12 +36,14 @@
 
 import axios from 'axios';
 import CreateUser from '../components/CreateUser.vue';
+import moment from 'moment';
 
 export default {
   data() {
     return {
       formOpen: false,
       users: [],
+      events: [],
       text: 'Create user',
       defaultUserId: 1,
       selectedIndex: localStorage.getItem('userId'),
@@ -49,6 +55,7 @@ export default {
   mounted() {
   this.checkUserId();
   this.getUsers();
+  this.getEvents();
   },
   methods: {
     VeiwForm() {
@@ -75,6 +82,43 @@ export default {
      console.log(error);
       });
       },
+     getEvents(){
+       axios
+      .get(`http://localhost:8080/events/`)
+      .then((response) => {
+        this.events = response.data;
+        this.addEvensCountToUsers();
+        this.addNextEventDate();
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+     },
+     addEvensCountToUsers(){
+      const usersWithEventsCount = this.users.map((user) => {
+        const eventsCount = this.events.filter((event) => event.userId == user.id).length;
+        return { ...user, eventsCount };
+      });
+      this.users = usersWithEventsCount;
+     },
+      addNextEventDate() {
+      const usersWithNextEventDate = this.users.map((user) => {
+        const userEvents = this.events.filter((event) => event.userId === user.id && new Date(event.startDate) >= new Date());
+        if (userEvents.length > 0) {
+          const nextEventDate = userEvents.reduce((min, event) => new Date(event.startDate) < new Date(min.startDate) ? event : min);
+          return { ...user, nextEventDate: nextEventDate.startDate };
+        } else {
+          return { ...user, nextEventDate: null };
+        }
+      });
+      this.users = usersWithNextEventDate;
+    },
+    formatDate(date) {
+      if(date === null){
+      return '-'
+      } else 
+      return moment(date).format('YYYY.MM.DD HH:mm')
+    },
     refresh(){
       this.getUsers();
       this.VeiwForm();
