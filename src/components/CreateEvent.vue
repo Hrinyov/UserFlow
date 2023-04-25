@@ -14,6 +14,7 @@
     <input type="datetime-local" id="endDate" v-model="endDate" required>
     <br>
     <button type="submit">Create Event</button>
+    <span>{{ text }}</span>
   </form>
   </div>
 </template>
@@ -27,32 +28,56 @@ export default {
       description: '',
       startDate: '',
       endDate: '',
-      userId: ''
+      userId: '',
+      events: [],
+      text: "",
     }
   },
+  mounted(){
+    this.userId = localStorage.getItem('userId');
+  },
   methods: {
-    createEvent() {
-      this.userId = localStorage.getItem('userId');
+    async createEvent() {
+    this.userId = localStorage.getItem('userId');
 
-      const newEvent = {
-        title: this.title,
-        description: this.description,
-        startDate: this.startDate,
-        endDate: this.endDate,
-        userId: this.userId
-      };
+    const newEvent = {
+      title: this.title,
+      description: this.description,
+      startDate: this.startDate,
+      endDate: this.endDate,
+      userId: this.userId
+    };
 
+    try {
+    const response = await axios.get(`http://localhost:8080/events/${this.userId}`);
+    this.events = response.data;
+    if (this.events.length === 0) {
+      console.log('problem');
+    }
+    console.log(this.events)
+    let conflictingEvents = this.events.filter(event => {
+      return (event.startDate <= newEvent.endDate && event.endDate >= newEvent.startDate);
+    });
+    if (conflictingEvents.length > 0) {
+      this.text = "You can't create event for this time.";
+      conflictingEvents = '';
+    } else {
+      console.log('Created');
       axios.post('http://localhost:8080/events', {
-      ...newEvent
+        ...newEvent
       })
       .then(response => {
-      this.$emit('event-created');
+        this.$emit('event-created');
       })
       .catch(error => {
-      console.log(error);
+        console.log(error);
       });
       this.clearForm();
-
+      this.text = '';
+      }
+      } catch (error) {
+    console.log(error);
+      }
     },
     clearForm(){
       this.title = '';
@@ -90,6 +115,9 @@ button[type="submit"] {
   display: block;
   margin: 10px auto;
 
+}
+span {
+color: #e12020;
 }
 
 </style>
