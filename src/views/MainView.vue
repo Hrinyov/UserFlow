@@ -16,6 +16,9 @@
     </tr>
   </thead>
   <tbody>
+    <tr v-if="users.length === 0">
+              <td colspan="6">The users list is empty.</td>
+            </tr>
     <tr class="user-tr" v-for="user in users" :key="user.id" 
     :class="{ 'selected': selectedIndex == user.id }" @click="selectUser(user)">
       <td>{{ user.username }}</td>
