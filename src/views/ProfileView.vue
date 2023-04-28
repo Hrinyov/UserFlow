@@ -71,10 +71,10 @@ export default {
     getUserInfoAndEvents(){
       this.userId = localStorage.getItem('userId');
     
-    axios
+      axios
       .get(`http://localhost:8080/users/${this.userId}`)
       .then((response) => {
-        this.user = response.data[0]
+        this.user = response.data
       })
       .catch((error) => {
         console.log(error)
