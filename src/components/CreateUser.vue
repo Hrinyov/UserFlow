@@ -18,6 +18,7 @@
         <input type="tel" v-model="phoneNumber" required>
       </label>
       <button type="submit">Create User</button>
+      <span>{{ text }}</span>
     </form>
   </div>
 </template>
@@ -31,6 +32,7 @@ export default {
       lastName: '',
       email: '',
       phoneNumber: '',
+      text: '',
     };
   },
   methods: {
@@ -46,14 +48,17 @@ export default {
       })
       .then(response => {
        if (response.status === 201) {
-            this.$emit("form-submitted");
-            this.clearForm();
-          } else {
-            this.$emit("submit-error");
-          }
+            this.$emit("form-submitted")
+            this.clearForm()
+            this.text =''
+          }    
       })
       .catch(error => {
-      console.log(error);
+       if (error.response.status === 409){
+          this.text = 'User with this username already exists'
+          this.$emit("submit-error")
+       }
+      
       })
       }
     },
@@ -111,5 +116,8 @@ button[type="submit"] {
   display: block;
   margin: 10px auto;
 
+}
+span {
+color: #e12020;
 }
 </style>
