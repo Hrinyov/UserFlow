@@ -1,8 +1,15 @@
 <template>
   <div class="main-wrapper">
   <div class="main">
-    <button class="add-user" @click="VeiwForm()">{{ text }}</button>
-    <CreateUser v-show="formOpen" @form-submitted="refresh"/>
+    <button class="add-user" @click="veiwForm()">{{ text }}</button>
+    <CreateUser v-show="formOpen" @form-submitted=statusMessage(true)
+    @submit-error = statusMessage(false)
+    />
+  </div>
+  <div class="submit-status" v-if="submitStatus.length !== 0" 
+    :class="{ 'green-text': submitStatus === 'Created', 'red-text': submitStatus === 'Try again' }">
+      {{ submitStatus }}
+
   </div>
   <div class="users-table">
 <table>
@@ -49,6 +56,7 @@ export default {
       text: 'Create user',
       defaultUserId: 1,
       selectedIndex: localStorage.getItem('userId'),
+      submitStatus: '',
     }
   },
   components: {
@@ -59,7 +67,7 @@ export default {
   this.getUsers();
   },
   methods: {
-    VeiwForm() {
+    veiwForm() {
       this.formOpen = !this.formOpen;
       this.formOpen ? this.text = 'Close form' : this.text = 'Create user'
     },
@@ -104,12 +112,23 @@ export default {
     },
     refresh(){
       this.getUsers();
-      this.VeiwForm();
+      this.veiwForm();
       },
     selectRow(index) {
       if (this.selectedIndex !== index) {
         this.selectedIndex = index;
       }
+    },
+    statusMessage(status){
+      if(status){
+        this.submitStatus = "Created"
+        this.refresh()
+      } else {
+        this.submitStatus = "Try again"
+      }
+      setTimeout(() => {
+              this.submitStatus = '';
+            }, 3000);
     }
   }, 
 }
@@ -150,5 +169,15 @@ background-color: hsla(198, 71%, 55%, 0.2);
 .info {
 margin-top: 5px;
 color: #21b77b;;
+}
+.submit-status{
+  font-size:21px;
+  font-weight: 600;
+}
+.green-text{
+  color:#21b77b;
+}
+.red-text{
+  color:rgb(209, 37, 37);
 }
 </style>

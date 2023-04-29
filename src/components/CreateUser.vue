@@ -41,17 +41,20 @@ export default {
         email: this.email,
         phonenumber: this.phoneNumber,
       };
-       axios.post('http://localhost:8080/users', {
+      axios.post('http://localhost:8080/users', {
       ...userData
       })
       .then(response => {
-      this.$emit('form-submitted');
-
+       if (response.status === 201) {
+            this.$emit("form-submitted");
+            this.clearForm();
+          } else {
+            this.$emit("submit-error");
+          }
       })
       .catch(error => {
       console.log(error);
-      });
-      this.clearForm();   
+      })
       }
     },
     clearForm(){
