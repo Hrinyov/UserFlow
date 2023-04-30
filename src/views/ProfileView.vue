@@ -8,8 +8,14 @@
       </div>
       <div>
         <button class="add-event" @click="viewForm()">{{ text }}</button>
-        <CreateEvent v-show="formOpen" @event-created="refresh" />
+        <CreateEvent v-show="formOpen" @event-created= statusMessage(true)
+        @submit-error = statusMessage(false) />
       </div>
+      <div class="submit-status" v-if="submitStatus.length !== 0" 
+    :class="{ 'green-text': submitStatus === 'Created', 'red-text': submitStatus === 'Try again' }">
+      {{ submitStatus }}
+
+  </div>
       <div class="events-wrapper">
         <table>
           <thead>
@@ -53,8 +59,9 @@ export default {
       user: {
         username: '',
         email: ''
-      },
-      text: 'Create event'
+        },
+      text: 'Create event',
+      submitStatus: ''
     }
   },
   mounted() { 
@@ -66,7 +73,7 @@ export default {
       this.formOpen ? (this.text = 'Close form') : (this.text = 'Create event')
     },
     formatDate(date) {
-      return moment(date).format('YYYY.MM.DD HH:mm')
+      return moment(date).format('DD.MM.YYYY HH:mm')
     },
     getUserInfoAndEvents(){
       this.userId = localStorage.getItem('userId');
@@ -92,6 +99,17 @@ export default {
     refresh(){
       this.getUserInfoAndEvents();
       this.viewForm();
+    },
+    statusMessage(status){
+      if(status){
+        this.submitStatus = "Created"
+        this.refresh()
+      } else {
+        this.submitStatus = "Try again"
+      }
+      setTimeout(() => {
+              this.submitStatus = '';
+            }, 3000);
     }
   }
 }
@@ -122,5 +140,15 @@ export default {
   justify-content: center;
   font-size: 20px;
   margin-top: 20px;
+}
+.submit-status{
+  font-size:21px;
+  font-weight: 600;
+}
+.green-text{
+  color:#21b77b;
+}
+.red-text{
+  color:rgb(209, 37, 37);
 }
 </style>

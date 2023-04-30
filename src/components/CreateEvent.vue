@@ -29,7 +29,6 @@ export default {
       startDate: '',
       endDate: '',
       userId: '',
-      events: [],
       text: "",
     }
   },
@@ -37,47 +36,34 @@ export default {
     this.userId = localStorage.getItem('userId');
   },
   methods: {
-    async createEvent() {
-    this.userId = localStorage.getItem('userId');
+    createEvent() {
+      this.userId = localStorage.getItem('userId');
 
-    const newEvent = {
-      title: this.title,
-      description: this.description,
-      startDate: this.startDate,
-      endDate: this.endDate,
-      userId: this.userId
-    };
+      const newEvent = {
+        title: this.title,
+        description: this.description,
+        startDate: this.startDate,
+        endDate: this.endDate,
+        userId: this.userId
+      };
 
-    try {
-    const response = await axios.get(`http://localhost:8080/events/${this.userId}`);
-    this.events = response.data;
-    if (this.events.length === 0) {
-      console.log('problem');
-    }
-    console.log(this.events)
-    let conflictingEvents = this.events.filter(event => {
-      return (event.startDate <= newEvent.endDate && event.endDate >= newEvent.startDate);
-    });
-    if (conflictingEvents.length > 0) {
-      this.text = "You can't create event for this time.";
-      conflictingEvents = '';
-    } else {
-      console.log('Created');
       axios.post('http://localhost:8080/events', {
         ...newEvent
       })
       .then(response => {
-        this.$emit('event-created');
+       if (response.status === 201) {
+            this.$emit("event-created")
+            this.clearForm()
+            this.text =''
+          }    
       })
       .catch(error => {
-        console.log(error);
-      });
-      this.clearForm();
-      this.text = '';
-      }
-      } catch (error) {
-    console.log(error);
-      }
+       if (error.response.status === 409){
+          this.text = "You can’t create event for this time"
+          this.$emit("submit-error")
+       }
+      
+      })
     },
     clearForm(){
       this.title = '';
