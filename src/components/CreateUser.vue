@@ -17,6 +17,14 @@
         Phone number:
         <input type="tel" v-model="phoneNumber" required>
       </label>
+      <label>
+        Password:
+        <input type="password" v-model="password" required>
+      </label>
+      <label>
+        Confirm Password:
+        <input type="password" v-model="confirmPassword" required>
+      </label>
       <button type="submit">Create User</button>
       <span>{{ text }}</span>
     </form>
@@ -32,6 +40,8 @@ export default {
       lastName: '',
       email: '',
       phoneNumber: '',
+      password: '',
+      confirmPassword: '',
       text: '',
     };
   },
@@ -42,6 +52,7 @@ export default {
         username: this.firstName +" "+ this.lastName,
         email: this.email,
         phonenumber: this.phoneNumber,
+        password: this.password,
       };
       axios.post('http://localhost:8080/users', {
       ...userData
@@ -67,6 +78,8 @@ export default {
       this.lastName = '';
       this.email = '';
       this.phoneNumber = '';
+      this.password = '';
+      this.confirmPassword = '';
     },
     validateForm(){
       const nameRegex = /^[a-zA-Z]+$/;
@@ -80,7 +93,10 @@ export default {
       !this.email ||
       !emailRegex.test(this.email) ||
       !this.phoneNumber || 
-      !phoneNumberRegex.test(this.phoneNumber)
+      !phoneNumberRegex.test(this.phoneNumber) ||
+      !this.password ||
+      !this.confirmPassword ||
+      this.password !== this.confirmPassword
         ){
           alert('Please fill out all the form fields with valid data');
           return false;
